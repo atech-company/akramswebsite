@@ -1,11 +1,11 @@
 "use client";
 
-import { useRef, useState } from "react";
-import Image from "next/image";
+import { useRef, useState, useEffect } from "react";
 import { Upload, Loader2, Link2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { resolveMediaUrl } from "@/lib/media-url";
 
 interface ImageUploadFieldProps {
   label: string;
@@ -21,6 +21,12 @@ export function ImageUploadField({ label, value, onChange, onUpload, required, o
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [showUrl, setShowUrl] = useState(false);
+  const [previewError, setPreviewError] = useState(false);
+  const previewSrc = resolveMediaUrl(value);
+
+  useEffect(() => {
+    setPreviewError(false);
+  }, [value]);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,7 +56,19 @@ export function ImageUploadField({ label, value, onChange, onUpload, required, o
 
       {value && (
         <div className="relative mb-3 h-32 w-full rounded-2xl overflow-hidden border border-white/10 bg-white/5">
-          <Image src={value} alt="Preview" fill className="object-cover" unoptimized />
+          {!previewError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={previewSrc}
+              alt="Preview"
+              className="h-full w-full object-cover"
+              onError={() => setPreviewError(true)}
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-xs text-muted p-4 text-center">
+              Preview unavailable — check storage link on server
+            </div>
+          )}
         </div>
       )}
 

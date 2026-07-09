@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { resolveMediaUrl } from "@/lib/media-url";
 
 type AspectRatio = "video" | "square" | "4/3" | "auto";
 
@@ -31,6 +32,7 @@ export function ContentImage({
   overlay = true,
 }: ContentImageProps) {
   const [error, setError] = useState(false);
+  const imageSrc = resolveMediaUrl(src);
 
   if (error) {
     return (
@@ -53,7 +55,7 @@ export function ContentImage({
       )}
     >
       <Image
-        src={src}
+        src={imageSrc}
         alt={alt}
         fill
         priority={priority}

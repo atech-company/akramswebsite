@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { resourceConfigs, type FormField } from "@/lib/admin/resources";
+import { resolveMediaUrl } from "@/lib/media-url";
 import { fetchResource, createResource, updateResource, deleteResource, uploadAdminImage } from "@/services/admin-api";
 import { ImageUploadField } from "@/components/shared/image-upload-field";
 
@@ -67,7 +68,13 @@ export function ResourceManager({ resourceKey }: ResourceManagerProps) {
 
   const openEdit = (item: Record<string, unknown>) => {
     setEditing(item);
-    setForm({ ...item });
+    const normalized = { ...item };
+    config.fields.forEach((f) => {
+      if (f.type === "image" && normalized[f.name]) {
+        normalized[f.name] = resolveMediaUrl(String(normalized[f.name]));
+      }
+    });
+    setForm(normalized);
     setModalOpen(true);
   };
 
