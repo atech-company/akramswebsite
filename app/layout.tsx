@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://akramslab.computechsleb.com"),
   title: {
     default: "AkramsLab — Embedded Systems, Robotics & IoT Engineering",
     template: "%s | AkramsLab",
@@ -29,6 +30,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     siteName: "AkramsLab",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://akramslab.computechsleb.com",
   },
 };
 
