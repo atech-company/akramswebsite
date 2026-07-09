@@ -29,6 +29,11 @@ export function resolveMediaUrl(src?: string | null): string {
     return trimmed;
   }
 
+  if (trimmed.startsWith("/uploads/") || trimmed.startsWith("uploads/")) {
+    const path = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
+    return `${apiOrigin}${path}`;
+  }
+
   if (trimmed.startsWith("/storage/")) {
     return `${apiOrigin}${trimmed}`;
   }
