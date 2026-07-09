@@ -10,6 +10,8 @@ const productionApiHost = (() => {
 
 const nextConfig: NextConfig = {
   images: {
+    // Shared hosting often can't reach /_next/image — load remote URLs directly
+    unoptimized: process.env.NEXT_IMAGE_UNOPTIMIZED !== "false",
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "www.pcbway.com" },
