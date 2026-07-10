@@ -9,6 +9,20 @@ const productionApiHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  // Avoid CDN/browser serving HTML that references chunks from a previous build
+  async headers() {
+    return [
+      {
+        source: "/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "no-store, must-revalidate",
+          },
+        ],
+      },
+    ];
+  },
   images: {
     // Shared hosting often can't reach /_next/image — load remote URLs directly
     unoptimized: process.env.NEXT_IMAGE_UNOPTIMIZED !== "false",

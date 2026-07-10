@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
+import { ChunkErrorRecovery } from "@/components/shared/chunk-error-recovery";
 import { SiteShell } from "@/components/layout/site-shell";
 import { RegistrationProvider } from "@/components/course-registration/registration-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -42,6 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+        <ChunkErrorRecovery />
         <ThemeProvider>
           <QueryProvider>
             <RegistrationProvider>
