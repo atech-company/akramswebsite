@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -6,14 +7,61 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getPortfolioProject } from "@/lib/data/content";
 import { ContentImage } from "@/components/shared/content-image";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, breadcrumbJsonLd, buildPageMetadata, SITE_NAME, toAbsoluteImage } from "@/lib/seo";
 
-export default async function PortfolioDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await getPortfolioProject(slug);
+  if (!project) return { title: "Project Not Found" };
+
+  return buildPageMetadata({
+    title: project.title,
+    description: project.excerpt || `${project.title} — engineering case study by ${SITE_NAME}.`,
+    path: `/portfolio/${project.slug}`,
+    image: project.thumbnail,
+    keywords: [
+      project.title,
+      ...(project.technologies ?? []),
+      "portfolio",
+      "case study",
+      SITE_NAME,
+    ],
+  });
+}
+
+export default async function PortfolioDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const project = await getPortfolioProject(slug);
   if (!project) notFound();
 
   return (
     <section className="pt-32 pb-24">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Portfolio", path: "/portfolio" },
+            { name: project.title, path: `/portfolio/${project.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "CreativeWork",
+            name: project.title,
+            description: project.excerpt,
+            image: toAbsoluteImage(project.thumbnail),
+            url: absoluteUrl(`/portfolio/${project.slug}`),
+            creator: {
+              "@type": "Organization",
+              name: SITE_NAME,
+            },
+            about: project.technologies,
+            client: project.client,
+          },
+        ]}
+      />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link href="/portfolio"><ArrowLeft className="h-4 w-4" /> Back to Portfolio</Link>

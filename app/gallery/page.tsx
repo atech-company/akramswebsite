@@ -1,7 +1,16 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/page-header";
 import { FadeIn } from "@/components/shared/motion";
 import { ContentImage } from "@/components/shared/content-image";
 import { getGalleryItems } from "@/lib/data/content";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Gallery — Boards, Workshops & Engineering Projects",
+  description:
+    "See inside AkramsLab: custom boards, workshops, university webinars, and engineering projects from Lebanon.",
+  path: "/gallery",
+});
 
 export default async function GalleryPage() {
   const galleryItems = await getGalleryItems();

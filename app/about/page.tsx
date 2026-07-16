@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/page-header";
 import { FadeIn } from "@/components/shared/motion";
 import { Card } from "@/components/ui/card";
@@ -7,12 +8,28 @@ import { getSiteInfo } from "@/lib/data/site";
 import Image from "next/image";
 import { ContentImage } from "@/components/shared/content-image";
 import { resolveMediaUrl } from "@/lib/media-url";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "About AkramsLab — Made in Lebanon",
+  description:
+    "AkramsLab specializes in AVR microcontrollers, control boards, PCB design, and hands-on electronics training for engineers in Lebanon and beyond.",
+  path: "/about",
+  keywords: ["about AkramsLab", "Lebanon electronics lab", "PCB design team", "AVR training Lebanon"],
+});
 
 export default async function AboutPage() {
   const [team, siteInfo] = await Promise.all([getTeam(), getSiteInfo()]);
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" },
+        ])}
+      />
       <PageHeader
         badge={`Founded ${siteInfo.founded}`}
         title="AkramsLab — Made in Lebanon"

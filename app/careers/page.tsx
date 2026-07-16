@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import { MapPin, Briefcase } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { FadeIn } from "@/components/shared/motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getCareers } from "@/lib/data/content";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Careers — Join the AkramsLab Engineering Team",
+  description:
+    "Build the future of embedded engineering with AkramsLab. Explore open roles for engineers who value craft, curiosity, and impact.",
+  path: "/careers",
+});
 
 export default async function CareersPage() {
   const careers = await getCareers();

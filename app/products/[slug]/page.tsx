@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Download, ShoppingCart } from "lucide-react";
@@ -6,8 +7,26 @@ import { Card } from "@/components/ui/card";
 import { getProduct } from "@/lib/data/content";
 import { formatPrice } from "@/lib/utils";
 import { ContentImage } from "@/components/shared/content-image";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, breadcrumbJsonLd, buildPageMetadata, SITE_NAME, toAbsoluteImage } from "@/lib/seo";
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  if (!product) return { title: "Product Not Found" };
+
+  return buildPageMetadata({
+    title: product.title,
+    description: product.excerpt || `${product.title} — engineering hardware from ${SITE_NAME}.`,
+    path: `/products/${product.slug}`,
+    image: product.thumbnail,
+    keywords: [product.title, "engineering hardware", "development board", SITE_NAME],
+  });
+}
+
+export default async function ProductDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const product = await getProduct(slug);
   if (!product) notFound();
@@ -16,6 +35,34 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   return (
     <section className="pt-32 pb-24">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Products", path: "/products" },
+            { name: product.title, path: `/products/${product.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: product.title,
+            description: product.excerpt,
+            image: toAbsoluteImage(product.thumbnail),
+            url: absoluteUrl(`/products/${product.slug}`),
+            brand: {
+              "@type": "Brand",
+              name: SITE_NAME,
+            },
+            offers: {
+              "@type": "Offer",
+              price: product.price,
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
+              url: product.buy_url || absoluteUrl(`/products/${product.slug}`),
+            },
+          },
+        ]}
+      />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link href="/products"><ArrowLeft className="h-4 w-4" /> All Products</Link>

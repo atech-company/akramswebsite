@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle } from "lucide-react";
@@ -6,8 +7,32 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getService, getPortfolio } from "@/lib/data/content";
 import { ContentImage } from "@/components/shared/content-image";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, breadcrumbJsonLd, buildPageMetadata, SITE_NAME, toAbsoluteImage } from "@/lib/seo";
 
-export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const service = await getService(slug);
+  if (!service) return { title: "Service Not Found" };
+
+  return buildPageMetadata({
+    title: service.title,
+    description: service.excerpt || `${service.title} by ${SITE_NAME} — professional engineering services.`,
+    path: `/services/${service.slug}`,
+    image: service.thumbnail,
+    keywords: [
+      service.title,
+      ...(service.technologies ?? []),
+      "engineering services",
+      "PCB design",
+      SITE_NAME,
+    ],
+  });
+}
+
+export default async function ServiceDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const [service, portfolio] = await Promise.all([getService(slug), getPortfolio(true)]);
   if (!service) notFound();
@@ -23,6 +48,30 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
   return (
     <section className="pt-32 pb-24">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: service.title, path: `/services/${service.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: service.title,
+            description: service.excerpt,
+            provider: {
+              "@type": "Organization",
+              name: SITE_NAME,
+              url: absoluteUrl("/"),
+            },
+            image: toAbsoluteImage(service.thumbnail),
+            url: absoluteUrl(`/services/${service.slug}`),
+            areaServed: "Worldwide",
+            serviceType: "Engineering",
+          },
+        ]}
+      />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link href="/services"><ArrowLeft className="h-4 w-4" /> All Services</Link>

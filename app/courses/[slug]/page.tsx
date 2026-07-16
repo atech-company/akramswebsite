@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { Clock, Users, Star, CheckCircle, ArrowLeft } from "lucide-react";
@@ -8,8 +9,33 @@ import { getCourse } from "@/lib/data/content";
 import { formatPrice } from "@/lib/utils";
 import { ContentImage } from "@/components/shared/content-image";
 import { EnrollButton } from "@/components/course-registration/enroll-button";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, breadcrumbJsonLd, buildPageMetadata, SITE_NAME, toAbsoluteImage } from "@/lib/seo";
 
-export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const course = await getCourse(slug);
+  if (!course) return { title: "Course Not Found" };
+
+  return buildPageMetadata({
+    title: course.title,
+    description: course.excerpt || `Learn ${course.title} with hands-on labs at ${SITE_NAME}.`,
+    path: `/courses/${course.slug}`,
+    image: course.thumbnail,
+    keywords: [
+      course.title,
+      ...(course.technologies ?? []),
+      course.difficulty,
+      "engineering course",
+      "embedded systems training",
+      SITE_NAME,
+    ],
+  });
+}
+
+export default async function CourseDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const course = await getCourse(slug);
   if (!course) notFound();
@@ -24,6 +50,67 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ s
 
   return (
     <section className="pt-32 pb-12">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Courses", path: "/courses" },
+            { name: course.title, path: `/courses/${course.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Course",
+            name: course.title,
+            description: course.excerpt,
+            provider: {
+              "@type": "Organization",
+              name: SITE_NAME,
+              url: absoluteUrl("/"),
+            },
+            image: toAbsoluteImage(course.thumbnail),
+            url: absoluteUrl(`/courses/${course.slug}`),
+            educationalLevel: course.difficulty,
+            timeRequired: `PT${course.duration_hours}H`,
+            numberOfCredits: course.lessons_count,
+            aggregateRating: course.rating
+              ? {
+                  "@type": "AggregateRating",
+                  ratingValue: course.rating,
+                  ratingCount: Math.max(course.students_count, 1),
+                }
+              : undefined,
+            offers: {
+              "@type": "Offer",
+              price: course.sale_price ?? course.price,
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
+              url: absoluteUrl(`/courses/${course.slug}`),
+            },
+            hasCourseInstance: {
+              "@type": "CourseInstance",
+              courseMode: "online",
+              instructor: {
+                "@type": "Person",
+                name: course.instructor,
+              },
+            },
+          },
+          faq.length
+            ? {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: faq.map((item) => ({
+                  "@type": "Question",
+                  name: item.question,
+                  acceptedAnswer: {
+                    "@type": "Answer",
+                    text: item.answer,
+                  },
+                })),
+              }
+            : {},
+        ].filter((item) => Object.keys(item).length > 0)}
+      />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link href="/courses"><ArrowLeft className="h-4 w-4" /> Back to Courses</Link>

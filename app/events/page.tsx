@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { Calendar, MapPin } from "lucide-react";
 import { PageHeader } from "@/components/shared/page-header";
 import { FadeIn } from "@/components/shared/motion";
@@ -6,6 +7,14 @@ import { Badge } from "@/components/ui/badge";
 import { getEvents } from "@/lib/data/content";
 import { formatDate, formatPrice } from "@/lib/utils";
 import { ContentImage } from "@/components/shared/content-image";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Events & Workshops — Hands-on Engineering Sessions",
+  description:
+    "Join AkramsLab workshops, summits, and hands-on sessions for the embedded systems and electronics engineering community.",
+  path: "/events",
+});
 
 export default async function EventsPage() {
   const events = await getEvents();

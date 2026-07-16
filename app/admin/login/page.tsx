@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { Cpu, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { BrandLogo } from "@/components/shared/brand-logo";
 import { adminLogin } from "@/services/admin-api";
 import { toast } from "sonner";
 
@@ -48,8 +49,8 @@ export default function AdminLoginPage() {
 
       <div className="relative w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 border border-primary/25 mb-4 glow-primary">
-            <Cpu className="h-7 w-7 text-primary" />
+          <div className="inline-flex mb-4 glow-primary rounded-2xl">
+            <BrandLogo size={56} className="border border-primary/25" />
           </div>
           <h1 className="text-2xl font-bold">AkramsLab <span className="text-primary">CMS</span></h1>
           <p className="text-muted text-sm mt-2">Sign in to manage your content</p>

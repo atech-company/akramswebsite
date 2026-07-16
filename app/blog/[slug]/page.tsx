@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -8,8 +9,29 @@ import { Badge } from "@/components/ui/badge";
 import { getBlogPost, getBlogPosts } from "@/lib/data/content";
 import { formatDate } from "@/lib/utils";
 import { ContentImage } from "@/components/shared/content-image";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, breadcrumbJsonLd, buildPageMetadata, SITE_NAME, toAbsoluteImage } from "@/lib/seo";
 
-export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
+  if (!post) return { title: "Article Not Found" };
+
+  return buildPageMetadata({
+    title: post.title,
+    description: post.excerpt || `Read ${post.title} on the ${SITE_NAME} engineering blog.`,
+    path: `/blog/${post.slug}`,
+    image: post.thumbnail,
+    type: "article",
+    keywords: [...(post.tags ?? []), "embedded systems", "engineering blog", SITE_NAME],
+    publishedTime: post.published_at,
+    authors: post.author?.name ? [post.author.name] : [SITE_NAME],
+  });
+}
+
+export default async function BlogDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const post = await getBlogPost(slug);
   if (!post) notFound();
@@ -21,6 +43,36 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
 
   return (
     <article className="pt-32 pb-24">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+            { name: post.title, path: `/blog/${post.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            description: post.excerpt,
+            image: toAbsoluteImage(post.thumbnail),
+            datePublished: post.published_at,
+            author: {
+              "@type": "Person",
+              name: post.author?.name || SITE_NAME,
+            },
+            publisher: {
+              "@type": "Organization",
+              name: SITE_NAME,
+              url: absoluteUrl("/"),
+            },
+            mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
+            keywords: post.tags?.join(", "),
+            wordCount: content.split(/\s+/).length,
+            timeRequired: `PT${post.read_time || 5}M`,
+          },
+        ]}
+      />
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link href="/blog"><ArrowLeft className="h-4 w-4" /> Back to Blog</Link>

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/page-header";
 import { FadeIn } from "@/components/shared/motion";
@@ -6,12 +7,28 @@ import { Badge } from "@/components/ui/badge";
 import { getBlogPosts } from "@/lib/data/content";
 import { formatDate } from "@/lib/utils";
 import { ContentImage } from "@/components/shared/content-image";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Engineering Blog — Embedded Systems, Robotics & IoT Insights",
+  description:
+    "Deep dives into embedded systems, robotics, IoT, PCB design, and the future of hardware engineering from the AkramsLab team.",
+  path: "/blog",
+  keywords: ["embedded systems blog", "robotics articles", "IoT tutorials", "PCB design tips", "firmware guides"],
+});
 
 export default async function BlogPage() {
   const blogPosts = await getBlogPosts();
 
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+        ])}
+      />
       <PageHeader badge="Blog" title="Engineering Insights" description="Deep dives into embedded systems, robotics, IoT, and the future of hardware engineering." />
       <section className="pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

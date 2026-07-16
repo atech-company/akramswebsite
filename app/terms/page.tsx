@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/page-header";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Terms of Service",
+  description: "Terms of Service for using AkramsLab engineering services, courses, and products.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

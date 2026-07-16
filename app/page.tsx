@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { HeroSection } from "@/features/home/hero-section";
 import { FeaturedCoursesSection } from "@/features/home/courses-section";
 import { ServicesSection } from "@/features/home/services-section";
@@ -19,6 +20,21 @@ import {
   getTestimonials,
 } from "@/lib/data/content";
 import { getSiteInfo } from "@/lib/data/site";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: DEFAULT_TITLE,
+  description: DEFAULT_DESCRIPTION,
+  path: "/",
+  keywords: [
+    "AkramsLab",
+    "embedded systems Lebanon",
+    "robotics training",
+    "IoT engineering",
+    "PCB design services",
+    "AVR microcontroller courses",
+  ],
+});
 
 export default async function HomePage() {
   const [
