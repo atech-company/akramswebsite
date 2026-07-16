@@ -1,31 +1,77 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { services, portfolio } from "@/lib/data/mock";
+import { getService, getPortfolio } from "@/lib/data/content";
 import { ContentImage } from "@/components/shared/content-image";
-import { serviceImages, images } from "@/lib/data/images";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, breadcrumbJsonLd, buildPageMetadata, SITE_NAME, toAbsoluteImage } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return services.map((s) => ({ slug: s.slug }));
+type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const service = await getService(slug);
+  if (!service) return { title: "Service Not Found" };
+
+  return buildPageMetadata({
+    title: service.title,
+    description: service.excerpt || `${service.title} by ${SITE_NAME} — professional engineering services.`,
+    path: `/services/${service.slug}`,
+    image: service.thumbnail,
+    keywords: [
+      service.title,
+      ...(service.technologies ?? []),
+      "engineering services",
+      "PCB design",
+      SITE_NAME,
+    ],
+  });
 }
 
-export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function ServiceDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const service = services.find((s) => s.slug === slug);
+  const [service, portfolio] = await Promise.all([getService(slug), getPortfolio(true)]);
   if (!service) notFound();
 
-  const workflow = service.workflow || [
-    { step: "Discovery", description: "Requirements analysis and feasibility study" },
-    { step: "Design", description: "Architecture and detailed engineering" },
-    { step: "Build", description: "Prototype development and validation" },
-    { step: "Deliver", description: "Production handoff and ongoing support" },
-  ];
+  const workflow = Array.isArray(service.workflow) && service.workflow.length
+    ? service.workflow
+    : [
+        { step: "Discovery", description: "Requirements analysis and feasibility study" },
+        { step: "Design", description: "Architecture and detailed engineering" },
+        { step: "Build", description: "Prototype development and validation" },
+        { step: "Deliver", description: "Production handoff and ongoing support" },
+      ];
 
   return (
     <section className="pt-32 pb-24">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Services", path: "/services" },
+            { name: service.title, path: `/services/${service.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: service.title,
+            description: service.excerpt,
+            provider: {
+              "@type": "Organization",
+              name: SITE_NAME,
+              url: absoluteUrl("/"),
+            },
+            image: toAbsoluteImage(service.thumbnail),
+            url: absoluteUrl(`/services/${service.slug}`),
+            areaServed: "Worldwide",
+            serviceType: "Engineering",
+          },
+        ]}
+      />
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link href="/services"><ArrowLeft className="h-4 w-4" /> All Services</Link>
@@ -43,12 +89,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               <Link href="/contact">Request a Quote</Link>
             </Button>
           </div>
-          <ContentImage
-            src={serviceImages[service.slug] ?? images.coursePcb}
-            alt={service.title}
-            aspect="square"
-            className="rounded-[24px] gradient-border"
-          />
+          <ContentImage src={service.thumbnail} alt={service.title} aspect="square" className="rounded-[24px] gradient-border" />
         </div>
 
         <h2 className="text-3xl font-bold mb-8">Our Workflow</h2>
@@ -62,20 +103,26 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           ))}
         </div>
 
-        <h2 className="text-3xl font-bold mb-8">Related Projects</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          {portfolio.slice(0, 3).map((p) => (
-            <Link key={p.id} href={`/portfolio/${p.slug}`}>
-              <Card className="p-6 hover:border-primary/20 transition-all h-full">
-                <h3 className="font-semibold mb-2">{p.title}</h3>
-                <p className="text-sm text-muted">{p.excerpt}</p>
-                <p className="text-xs text-primary mt-4 flex items-center gap-1">
-                  <CheckCircle className="h-3 w-3" />{p.result}
-                </p>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        {portfolio.length > 0 && (
+          <>
+            <h2 className="text-3xl font-bold mb-8">Related Projects</h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {portfolio.slice(0, 3).map((p) => (
+                <Link key={p.id} href={`/portfolio/${p.slug}`}>
+                  <Card className="p-6 hover:border-primary/20 transition-all h-full">
+                    <h3 className="font-semibold mb-2">{p.title}</h3>
+                    <p className="text-sm text-muted">{p.excerpt}</p>
+                    {p.result && (
+                      <p className="text-xs text-primary mt-4 flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3" />{p.result}
+                      </p>
+                    )}
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

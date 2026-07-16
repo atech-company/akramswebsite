@@ -1,16 +1,34 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/shared/page-header";
 import { FadeIn } from "@/components/shared/motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { blogPosts } from "@/lib/data/mock";
+import { getBlogPosts } from "@/lib/data/content";
 import { formatDate } from "@/lib/utils";
 import { ContentImage } from "@/components/shared/content-image";
-import { blogImages, images } from "@/lib/data/images";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 
-export default function BlogPage() {
+export const metadata: Metadata = buildPageMetadata({
+  title: "Engineering Blog — Embedded Systems, Robotics & IoT Insights",
+  description:
+    "Deep dives into embedded systems, robotics, IoT, PCB design, and the future of hardware engineering from the AkramsLab team.",
+  path: "/blog",
+  keywords: ["embedded systems blog", "robotics articles", "IoT tutorials", "PCB design tips", "firmware guides"],
+});
+
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
+
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+        ])}
+      />
       <PageHeader badge="Blog" title="Engineering Insights" description="Deep dives into embedded systems, robotics, IoT, and the future of hardware engineering." />
       <section className="pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -18,11 +36,7 @@ export default function BlogPage() {
             <FadeIn key={post.id} delay={i * 0.1}>
               <Link href={`/blog/${post.slug}`}>
                 <Card className="group overflow-hidden hover:border-primary/20 h-full">
-                  <ContentImage
-                    src={post.thumbnail ?? blogImages[post.slug] ?? images.blogMicrocontroller}
-                    alt={post.title}
-                    aspect="video"
-                  />
+                  <ContentImage src={post.thumbnail} alt={post.title} aspect="video" />
                   <CardContent className="p-6">
                     <p className="text-xs text-muted mb-2">{formatDate(post.published_at)} · {post.read_time} min read</p>
                     <h2 className="text-lg font-semibold group-hover:text-primary transition-colors mb-2">{post.title}</h2>

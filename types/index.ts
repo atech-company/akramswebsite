@@ -132,6 +132,24 @@ export interface CareerPosition {
   requirements?: string[];
 }
 
+export interface GalleryItem {
+  id: number;
+  title: string;
+  slug: string;
+  description?: string | null;
+  image: string;
+  type?: string;
+  category?: string;
+  sort_order?: number;
+}
+
+export interface Partner {
+  id: number;
+  name: string;
+  logo: string;
+  url?: string;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   meta?: {

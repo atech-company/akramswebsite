@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, Cpu } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { StartLearningButton } from "@/components/course-registration/start-learning-button";
-import { navLinks } from "@/lib/data/mock";
+import { BrandLogo } from "@/components/shared/brand-logo";
+import { navLinks } from "@/lib/config/navigation";
 import { cn } from "@/lib/utils";
 
 export function Navbar() {
@@ -30,9 +31,11 @@ export function Navbar() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20 group-hover:glow-primary transition-all">
-            <Cpu className="h-5 w-5 text-primary" />
-          </div>
+          <BrandLogo
+            size={40}
+            priority
+            className="border border-primary/20 group-hover:glow-primary transition-all"
+          />
           <span className="text-xl font-bold tracking-tight">
             Akrams<span className="text-primary">Lab</span>
           </span>

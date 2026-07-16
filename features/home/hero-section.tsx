@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedGrid, FloatingBlobs, MouseGlow } from "@/components/shared/effects";
 import { StartLearningButton } from "@/components/course-registration/start-learning-button";
-import { trustedCompanies, siteInfo } from "@/lib/data/mock";
+import type { Partner } from "@/types";
+import type { SiteInfo } from "@/lib/data/site";
 
 const floatingIcons = [
   { Icon: CircuitBoard, x: "8%", y: "22%", delay: 0 },
@@ -16,7 +17,7 @@ const floatingIcons = [
   { Icon: Zap, x: "12%", y: "68%", delay: 1.5 },
 ];
 
-export function HeroSection() {
+export function HeroSection({ siteInfo, partners }: { siteInfo: SiteInfo; partners: Partner[] }) {
   return (
     <section className="relative flex items-center overflow-hidden pt-28 pb-14 md:pt-32 md:pb-16">
       <AnimatedGrid />
@@ -39,12 +40,8 @@ export function HeroSection() {
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 lg:px-8 w-full">
         <div className="max-w-3xl">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Badge className="mb-4 text-xs">Founded {siteInfo.founded} · Lebanon · 500+ Students</Badge>
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <Badge className="mb-4 text-xs">Founded {siteInfo.founded} · {siteInfo.location}</Badge>
           </motion.div>
 
           <motion.h1
@@ -62,7 +59,7 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15 }}
           >
-            AVR · PCB Design · ESP32 IoT · Robotics — hands-on training and custom hardware from Lebanon&apos;s AkramsLab.
+            {siteInfo.tagline} — hands-on training and custom hardware from Lebanon&apos;s {siteInfo.name}.
           </motion.p>
 
           <motion.div
@@ -82,21 +79,23 @@ export function HeroSection() {
           </motion.div>
         </div>
 
-        <motion.div
-          className="mt-12 md:mt-14 pt-8 border-t border-white/8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <p className="text-[11px] text-muted uppercase tracking-widest mb-4">Trusted by universities & partners</p>
-          <div className="flex flex-wrap gap-x-6 gap-y-2 items-center">
-            {trustedCompanies.map((company) => (
-              <span key={company} className="text-xs md:text-sm font-medium text-muted/80 hover:text-foreground transition-colors">
-                {company}
-              </span>
-            ))}
-          </div>
-        </motion.div>
+        {partners.length > 0 && (
+          <motion.div
+            className="mt-12 md:mt-14 pt-8 border-t border-white/8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <p className="text-[11px] text-muted uppercase tracking-widest mb-4">Trusted by universities & partners</p>
+            <div className="flex flex-wrap gap-x-6 gap-y-2 items-center">
+              {partners.map((partner) => (
+                <span key={partner.id} className="text-xs md:text-sm font-medium text-muted/80 hover:text-foreground transition-colors">
+                  {partner.name}
+                </span>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   );

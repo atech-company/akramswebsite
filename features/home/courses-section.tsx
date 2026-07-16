@@ -6,18 +6,15 @@ import { FadeIn, HoverLift } from "@/components/shared/motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { courses } from "@/lib/data/mock";
 import { formatPrice } from "@/lib/utils";
 import { ContentImage } from "@/components/shared/content-image";
-import { courseImages, images } from "@/lib/data/images";
 import type { Course } from "@/types";
 
 function CourseCard({ course }: { course: Course }) {
-  const img = course.thumbnail ?? courseImages[course.slug] ?? images.coursePcb;
   return (
     <HoverLift>
       <Card className="group relative overflow-hidden hover:border-primary/20 h-full">
-        <ContentImage src={img} alt={course.title} aspect="video" />
+        <ContentImage src={course.thumbnail} alt={course.title} aspect="video" />
         <CardContent className="p-6">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <Badge className="capitalize">{course.difficulty}</Badge>
@@ -27,9 +24,7 @@ function CourseCard({ course }: { course: Course }) {
             </span>
             <span className="text-muted text-sm">({course.students_count.toLocaleString()} students)</span>
           </div>
-          <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
-            {course.title}
-          </h3>
+          <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">{course.title}</h3>
           <p className="text-sm text-muted mb-4 line-clamp-2">{course.excerpt}</p>
           <div className="flex flex-wrap gap-2 mb-4">
             {course.technologies.slice(0, 3).map((tech) => (
@@ -50,9 +45,7 @@ function CourseCard({ course }: { course: Course }) {
   );
 }
 
-export function FeaturedCoursesSection() {
-  const featured = courses.filter((c) => c.is_featured);
-
+export function FeaturedCoursesSection({ courses }: { courses: Course[] }) {
   return (
     <section className="py-24">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -68,7 +61,7 @@ export function FeaturedCoursesSection() {
         </FadeIn>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featured.map((course, i) => (
+          {courses.map((course, i) => (
             <FadeIn key={course.id} delay={i * 0.1} className="relative">
               <CourseCard course={course} />
             </FadeIn>

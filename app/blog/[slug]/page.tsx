@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
@@ -5,26 +6,73 @@ import remarkGfm from "remark-gfm";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { blogPosts } from "@/lib/data/mock";
+import { getBlogPost, getBlogPosts } from "@/lib/data/content";
 import { formatDate } from "@/lib/utils";
 import { ContentImage } from "@/components/shared/content-image";
-import { blogImages, images } from "@/lib/data/images";
+import { JsonLd } from "@/components/seo/json-ld";
+import { absoluteUrl, breadcrumbJsonLd, buildPageMetadata, SITE_NAME, toAbsoluteImage } from "@/lib/seo";
 
-export function generateStaticParams() {
-  return blogPosts.map((p) => ({ slug: p.slug }));
+type PageProps = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getBlogPost(slug);
+  if (!post) return { title: "Article Not Found" };
+
+  return buildPageMetadata({
+    title: post.title,
+    description: post.excerpt || `Read ${post.title} on the ${SITE_NAME} engineering blog.`,
+    path: `/blog/${post.slug}`,
+    image: post.thumbnail,
+    type: "article",
+    keywords: [...(post.tags ?? []), "embedded systems", "engineering blog", SITE_NAME],
+    publishedTime: post.published_at,
+    authors: post.author?.name ? [post.author.name] : [SITE_NAME],
+  });
 }
 
-export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function BlogDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+  const post = await getBlogPost(slug);
   if (!post) notFound();
 
-  const content = post.content || `# ${post.title}\n\n${post.excerpt}\n\n## Introduction\n\nThis article explores cutting-edge developments in engineering and technology.\n\n## Key Takeaways\n\n- Industry best practices\n- Real-world implementation strategies\n- Future trends to watch`;
+  const content = post.content || `# ${post.title}\n\n${post.excerpt}`;
 
-  const related = blogPosts.filter((p) => p.slug !== slug).slice(0, 2);
+  const allPosts = await getBlogPosts();
+  const related = allPosts.filter((p) => p.slug !== slug).slice(0, 2);
 
   return (
     <article className="pt-32 pb-24">
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Blog", path: "/blog" },
+            { name: post.title, path: `/blog/${post.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Article",
+            headline: post.title,
+            description: post.excerpt,
+            image: toAbsoluteImage(post.thumbnail),
+            datePublished: post.published_at,
+            author: {
+              "@type": "Person",
+              name: post.author?.name || SITE_NAME,
+            },
+            publisher: {
+              "@type": "Organization",
+              name: SITE_NAME,
+              url: absoluteUrl("/"),
+            },
+            mainEntityOfPage: absoluteUrl(`/blog/${post.slug}`),
+            keywords: post.tags?.join(", "),
+            wordCount: content.split(/\s+/).length,
+            timeRequired: `PT${post.read_time || 5}M`,
+          },
+        ]}
+      />
       <div className="mx-auto max-w-3xl px-6 lg:px-8">
         <Button variant="ghost" size="sm" asChild className="mb-8">
           <Link href="/blog"><ArrowLeft className="h-4 w-4" /> Back to Blog</Link>
@@ -36,12 +84,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         <p className="text-muted mb-8">
           {formatDate(post.published_at)} · {post.read_time} min read · {post.author?.name}
         </p>
-        <ContentImage
-          src={post.thumbnail ?? blogImages[post.slug] ?? images.blogMicrocontroller}
-          alt={post.title}
-          aspect="video"
-          className="rounded-[24px] mb-12"
-        />
+        <ContentImage src={post.thumbnail} alt={post.title} aspect="video" className="rounded-[24px] mb-12" />
         <div className="prose prose-invert prose-lg max-w-none prose-headings:font-bold prose-a:text-primary prose-code:text-primary">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
         </div>

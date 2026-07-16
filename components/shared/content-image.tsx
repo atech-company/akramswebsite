@@ -8,7 +8,7 @@ import { resolveMediaUrl } from "@/lib/media-url";
 type AspectRatio = "video" | "square" | "4/3" | "auto";
 
 interface ContentImageProps {
-  src: string;
+  src?: string | null;
   alt: string;
   className?: string;
   aspect?: AspectRatio;
@@ -34,7 +34,7 @@ export function ContentImage({
   const [error, setError] = useState(false);
   const imageSrc = resolveMediaUrl(src);
 
-  if (error) {
+  if (!imageSrc || error) {
     return (
       <div
         className={cn(

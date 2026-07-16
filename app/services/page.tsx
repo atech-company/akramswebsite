@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   CircuitBoard, Cpu, Microchip, Wifi, Plane, Box, Wrench, Lightbulb, ArrowRight,
@@ -6,16 +7,40 @@ import { PageHeader } from "@/components/shared/page-header";
 import { FadeIn, HoverLift } from "@/components/shared/motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { services } from "@/lib/data/mock";
+import { getServices } from "@/lib/data/content";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 
 const iconMap: Record<string, React.ElementType> = {
   "circuit-board": CircuitBoard, cpu: Cpu, microchip: Microchip, wifi: Wifi,
   plane: Plane, box: Box, wrench: Wrench, lightbulb: Lightbulb,
 };
 
-export default function ServicesPage() {
+export const metadata: Metadata = buildPageMetadata({
+  title: "Engineering Services — PCB, Firmware, IoT & Product Development",
+  description:
+    "From PCB design to full product development — enterprise-grade embedded systems, robotics, and IoT engineering for ambitious teams.",
+  path: "/services",
+  keywords: [
+    "PCB design services",
+    "firmware development",
+    "IoT engineering services",
+    "embedded systems consulting",
+    "custom electronics Lebanon",
+  ],
+});
+
+export default async function ServicesPage() {
+  const services = await getServices();
+
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+        ])}
+      />
       <PageHeader
         badge="Services"
         title="Engineering Services"

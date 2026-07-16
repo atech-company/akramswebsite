@@ -7,7 +7,7 @@ import {
 import { FadeIn, HoverLift } from "@/components/shared/motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { services } from "@/lib/data/mock";
+import type { Service } from "@/types";
 
 const iconMap: Record<string, React.ElementType> = {
   "circuit-board": CircuitBoard,
@@ -20,18 +20,14 @@ const iconMap: Record<string, React.ElementType> = {
   lightbulb: Lightbulb,
 };
 
-export function ServicesSection() {
+export function ServicesSection({ services }: { services: Service[] }) {
   return (
     <section className="py-24 bg-card/30">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <FadeIn className="text-center mb-16">
           <Badge className="mb-4">Engineering Services</Badge>
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            End-to-End Engineering
-          </h2>
-          <p className="text-muted max-w-2xl mx-auto">
-            From concept to production — we deliver enterprise-grade embedded solutions.
-          </p>
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">End-to-End Engineering</h2>
+          <p className="text-muted max-w-2xl mx-auto">From concept to production — we deliver enterprise-grade embedded solutions.</p>
         </FadeIn>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

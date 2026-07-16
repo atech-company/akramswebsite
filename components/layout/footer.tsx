@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { Cpu, Mail, MapPin, Phone, Share2, Globe, MessageCircle } from "lucide-react";
-import { navLinks, siteInfo } from "@/lib/data/mock";
+import { Mail, MapPin, Phone } from "lucide-react";
+import { BrandLogo } from "@/components/shared/brand-logo";
+import { navLinks } from "@/lib/config/navigation";
+import type { SiteInfo } from "@/lib/data/site";
 
 const footerLinks = {
   company: [
@@ -22,32 +24,39 @@ const footerLinks = {
   ],
 };
 
-export function Footer() {
+export function Footer({ siteInfo }: { siteInfo: SiteInfo }) {
+  const socialLinks = [
+    siteInfo.links.linkedin,
+    siteInfo.links.bio,
+    siteInfo.links.instructables,
+    siteInfo.email ? `mailto:${siteInfo.email}` : null,
+  ].filter(Boolean) as string[];
+
   return (
     <footer className="border-t border-white/8 bg-card/50">
       <div className="mx-auto max-w-7xl px-6 lg:px-8 py-20">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-3 mb-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
-                <Cpu className="h-5 w-5 text-primary" />
-              </div>
+              <BrandLogo size={40} className="border border-primary/20" />
               <span className="text-xl font-bold">
                 Akrams<span className="text-primary">Lab</span>
               </span>
             </Link>
             <p className="text-muted text-sm leading-relaxed max-w-sm mb-6">
-              Lebanon-based engineering lab specializing in AVR microcontrollers, control boards, PCB design, and hands-on robotics training since 2021.
+              {siteInfo.tagline} — hands-on robotics training since {siteInfo.founded}.
             </p>
             <div className="flex gap-3">
-              {[Share2, Globe, MessageCircle, Mail].map((Icon, i) => (
+              {socialLinks.map((href) => (
                 <a
-                  key={i}
-                  href="#"
+                  key={href}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 hover:border-primary/30 hover:bg-primary/10 transition-all"
                   aria-label="Social link"
                 >
-                  <Icon className="h-4 w-4 text-muted hover:text-primary" />
+                  <Mail className="h-4 w-4 text-muted hover:text-primary" />
                 </a>
               ))}
             </div>
@@ -89,7 +98,7 @@ export function Footer() {
 
         <div className="mt-16 pt-8 border-t border-white/8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted">
-            © {new Date().getFullYear()} AkramsLab. All rights reserved.
+            © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
           </p>
           <div className="flex gap-6">
             {navLinks.slice(0, 4).map((link) => (

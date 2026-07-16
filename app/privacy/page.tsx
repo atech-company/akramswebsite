@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/page-header";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Privacy Policy",
+  description: "Learn how AkramsLab collects, uses, and protects your personal information.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

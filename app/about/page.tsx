@@ -1,16 +1,35 @@
+import type { Metadata } from "next";
 import { PageHeader } from "@/components/shared/page-header";
 import { FadeIn } from "@/components/shared/motion";
-import { AnimatedCounter } from "@/components/shared/motion";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { team, stats, siteInfo } from "@/lib/data/mock";
+import { getTeam } from "@/lib/data/content";
+import { getSiteInfo } from "@/lib/data/site";
 import Image from "next/image";
-import { images } from "@/lib/data/images";
 import { ContentImage } from "@/components/shared/content-image";
+import { resolveMediaUrl } from "@/lib/media-url";
+import { JsonLd } from "@/components/seo/json-ld";
+import { breadcrumbJsonLd, buildPageMetadata } from "@/lib/seo";
 
-export default function AboutPage() {
+export const metadata: Metadata = buildPageMetadata({
+  title: "About AkramsLab — Made in Lebanon",
+  description:
+    "AkramsLab specializes in AVR microcontrollers, control boards, PCB design, and hands-on electronics training for engineers in Lebanon and beyond.",
+  path: "/about",
+  keywords: ["about AkramsLab", "Lebanon electronics lab", "PCB design team", "AVR training Lebanon"],
+});
+
+export default async function AboutPage() {
+  const [team, siteInfo] = await Promise.all([getTeam(), getSiteInfo()]);
+
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" },
+        ])}
+      />
       <PageHeader
         badge={`Founded ${siteInfo.founded}`}
         title="AkramsLab — Made in Lebanon"
@@ -29,23 +48,14 @@ export default function AboutPage() {
                   Beyond education, we collaborate with individuals, universities, and companies to develop cutting-edge projects. Whether designing intricate PCB layouts or advanced control systems, we bring ideas to life with precision.
                 </p>
                 <p className="text-muted leading-relaxed">
-                  Founded in 2021 by <strong className="text-foreground">Eng. Akram Hussein</strong> — Electrical Engineer, Arduino Certified Instructor, and Microsoft Innovative Educator Expert — AkramsLab has trained 500+ students and delivered 70+ real engineering projects.
+                  Founded in {siteInfo.founded} by <strong className="text-foreground">Eng. Akram Hussein</strong> — Electrical Engineer, Arduino Certified Instructor, and Microsoft Innovative Educator Expert — AkramsLab has trained 500+ students and delivered 70+ real engineering projects.
                 </p>
               </div>
-              <ContentImage src={images.heroBackground} alt="AkramsLab engineering" aspect="square" className="rounded-[24px] gradient-border" />
+              {team[0]?.avatar && (
+                <ContentImage src={team[0].avatar} alt={team[0].name} aspect="square" className="rounded-[24px] gradient-border" />
+              )}
             </div>
           </FadeIn>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
-            {stats.map((stat) => (
-              <Card key={stat.label} className="p-6 text-center">
-                <p className="text-3xl font-bold text-gradient">
-                  <AnimatedCounter value={stat.value} suffix={stat.suffix} />
-                </p>
-                <p className="text-sm text-muted mt-2">{stat.label}</p>
-              </Card>
-            ))}
-          </div>
 
           <FadeIn>
             <h2 className="text-3xl font-bold text-center mb-4">Leadership</h2>
@@ -56,12 +66,17 @@ export default function AboutPage() {
               {team.map((member) => (
                 <Card key={member.id} className="p-8 text-center hover:border-primary/20 transition-all">
                   <div className="relative w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 border-2 border-primary/30">
-                    <Image
-                      src={member.avatar ?? images.akramHussein}
-                      alt={member.name}
-                      fill
-                      className="object-cover"
-                    />
+                    {member.avatar ? (
+                      <Image
+                        src={resolveMediaUrl(member.avatar)}
+                        alt={member.name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-primary/10" />
+                    )}
                   </div>
                   <h3 className="font-semibold text-lg">{member.name}</h3>
                   <Badge variant="secondary" className="mt-2">{member.role}</Badge>
