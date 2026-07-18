@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { resolveMediaUrl } from "@/lib/media-url";
 
 export const SITE_NAME = "AkramsLab";
+export const SITE_NAME_AR = "مختبر اكرم";
 export const SITE_TAGLINE = "Embedded Systems, Robotics & IoT Engineering";
 export const DEFAULT_TITLE = `${SITE_NAME} — ${SITE_TAGLINE}`;
 export const DEFAULT_DESCRIPTION =
   "Premium embedded systems engineering, robotics, IoT, and PCB design services. World-class training for engineers who build the future.";
 export const DEFAULT_KEYWORDS = [
   "AkramsLab",
+  "مختبر اكرم",
   "embedded systems",
   "robotics",
   "IoT",
@@ -129,7 +131,7 @@ export function organizationJsonLd(input?: {
     "@type": "Organization",
     name: SITE_NAME,
     url: getSiteUrl(),
-    logo: absoluteUrl("/brand/logo.png"),
+    logo: absoluteUrl("/brand/logo-master.png"),
     description: DEFAULT_DESCRIPTION,
     email: input?.email,
     telephone: input?.phone,

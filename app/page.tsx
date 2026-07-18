@@ -54,7 +54,7 @@ export default async function HomePage() {
     getProducts(true),
     getTestimonials(),
     getPartners(),
-    getBlogPosts(),
+    getBlogPosts(6),
   ]);
 
   return (

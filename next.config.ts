@@ -9,15 +9,24 @@ const productionApiHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
-  // Avoid CDN/browser serving HTML that references chunks from a previous build
+  // HTML can be briefly cached at the edge; static assets stay long-lived via /_next
   async headers() {
     return [
       {
-        source: "/((?!_next/static|_next/image|favicon.ico|.*\\..*).*)",
+        source: "/((?!_next/static|_next/image|favicon.ico|brand/|.*\\..*).*)",
         headers: [
           {
             key: "Cache-Control",
-            value: "no-store, must-revalidate",
+            value: "public, s-maxage=60, stale-while-revalidate=300",
+          },
+        ],
+      },
+      {
+        source: "/brand/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },

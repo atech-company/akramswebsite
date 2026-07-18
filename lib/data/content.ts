@@ -47,7 +47,7 @@ export async function getCourseSlugs(): Promise<string[]> {
 }
 
 export async function getPortfolio(featured = false): Promise<PortfolioProject[]> {
-  const query = featured ? "?featured=1&per_page=50" : "?per_page=50";
+  const query = featured ? "?featured=1&per_page=8" : "?per_page=50";
   const res = await apiFetch<PaginatedResponse<PortfolioProject>>(`/portfolio${query}`);
   return (res?.data ?? []).map(normalizePortfolio);
 }
@@ -63,7 +63,7 @@ export async function getPortfolioSlugs(): Promise<string[]> {
 }
 
 export async function getProducts(featured = false): Promise<Product[]> {
-  const query = featured ? "?featured=1&per_page=50" : "?per_page=50";
+  const query = featured ? "?featured=1&per_page=8" : "?per_page=50";
   const res = await apiFetch<PaginatedResponse<Product>>(`/products${query}`);
   return res?.data ?? [];
 }
@@ -94,8 +94,8 @@ export async function getServiceSlugs(): Promise<string[]> {
   return items.map((s) => s.slug);
 }
 
-export async function getBlogPosts(): Promise<BlogPost[]> {
-  const res = await apiFetch<PaginatedResponse<BlogPost>>("/blog?per_page=50");
+export async function getBlogPosts(limit = 50): Promise<BlogPost[]> {
+  const res = await apiFetch<PaginatedResponse<BlogPost>>(`/blog?per_page=${limit}`);
   return res?.data ?? [];
 }
 

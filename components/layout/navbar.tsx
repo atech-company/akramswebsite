@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { StartLearningButton } from "@/components/course-registration/start-learning-button";
 import { BrandLogo } from "@/components/shared/brand-logo";
+import { BrandWordmark } from "@/components/shared/brand-wordmark";
 import { navLinks } from "@/lib/config/navigation";
 import { cn } from "@/lib/utils";
 
@@ -32,13 +33,11 @@ export function Navbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3 group">
           <BrandLogo
-            size={40}
+            size={48}
             priority
-            className="border border-primary/20 group-hover:glow-primary transition-all"
+            className="border border-primary/20 group-hover:glow-primary transition-all shrink-0"
           />
-          <span className="text-xl font-bold tracking-tight">
-            Akrams<span className="text-primary">Lab</span>
-          </span>
+          <BrandWordmark />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1">

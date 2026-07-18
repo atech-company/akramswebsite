@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="AkramsLab">
+  <rect width="512" height="512" rx="96" fill="#000000"/>
+  <!-- Circuit traces -->
+  <g fill="none" stroke="#00B4FF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M292 168 L340 118"/>
+    <path d="M300 188 L358 148"/>
+    <path d="M308 210 L372 182"/>
+    <path d="M312 232 L378 220"/>
+    <path d="M314 254 L380 258"/>
+    <path d="M310 276 L370 298"/>
+  </g>
+  <g fill="#00B4FF">
+    <circle cx="340" cy="118" r="7"/>
+    <circle cx="358" cy="148" r="7"/>
+    <circle cx="372" cy="182" r="7"/>
+    <circle cx="378" cy="220" r="7"/>
+    <circle cx="380" cy="258" r="7"/>
+    <circle cx="370" cy="298" r="7"/>
+  </g>
+  <!-- Stylized A / chevron mark -->
+  <g fill="#9CA3AF">
+    <path d="M168 318 L228 148 L258 148 L198 318 Z"/>
+    <path d="M214 318 L274 148 L304 148 L244 318 Z"/>
+    <path d="M260 318 L320 148 L350 148 L290 318 Z"/>
+  </g>
+  <!-- Cyan triangle accent -->
+  <path d="M236 292 L256 258 L276 292 Z" fill="#00B4FF"/>
+</svg>

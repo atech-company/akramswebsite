@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { BrandLogo } from "@/components/shared/brand-logo";
+import { BrandWordmark } from "@/components/shared/brand-wordmark";
 import { navLinks } from "@/lib/config/navigation";
 import type { SiteInfo } from "@/lib/data/site";
 
@@ -38,10 +39,8 @@ export function Footer({ siteInfo }: { siteInfo: SiteInfo }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-3 mb-6">
-              <BrandLogo size={40} className="border border-primary/20" />
-              <span className="text-xl font-bold">
-                Akrams<span className="text-primary">Lab</span>
-              </span>
+              <BrandLogo size={48} className="border border-primary/20 shrink-0" />
+              <BrandWordmark />
             </Link>
             <p className="text-muted text-sm leading-relaxed max-w-sm mb-6">
               {siteInfo.tagline} — hands-on robotics training since {siteInfo.founded}.

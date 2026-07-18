@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
 import { Toaster } from "sonner";
 import { ChunkErrorRecovery } from "@/components/shared/chunk-error-recovery";
 import { SiteShell } from "@/components/layout/site-shell";
@@ -28,6 +28,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const notoArabic = Noto_Sans_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+  weight: ["500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -101,8 +108,8 @@ export const metadata: Metadata = {
   },
 };
 
-export const dynamic = "force-dynamic";
-export const fetchCache = "force-no-store";
+/** Public pages revalidate every 2 minutes — CMS edits appear shortly after save */
+export const revalidate = 120;
 
 export default async function RootLayout({
   children,
@@ -114,7 +121,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${notoArabic.variable} antialiased bg-background text-foreground`}
+      >
         <JsonLd
           data={[
             organizationJsonLd({

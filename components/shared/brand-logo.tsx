@@ -7,15 +7,20 @@ type BrandLogoProps = {
   priority?: boolean;
 };
 
-export function BrandLogo({ className, size = 40, priority = false }: BrandLogoProps) {
+/**
+ * Retina-ready brand mark (512px WebP ≈ 11KB).
+ * Displays sharp on phones, tablets, and HiDPI screens.
+ */
+export function BrandLogo({ className, size = 48, priority = false }: BrandLogoProps) {
   return (
     <Image
-      src="/brand/logo.png"
-      alt="AkramsLab"
+      src="/brand/logo-512.webp"
+      alt="AkramsLab — مختبر اكرم"
       width={size}
       height={size}
       priority={priority}
-      className={cn("rounded-2xl object-cover", className)}
+      unoptimized
+      className={cn("rounded-2xl object-contain bg-black", className)}
     />
   );
 }
