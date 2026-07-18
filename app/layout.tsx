@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
+import { Geist, Noto_Sans_Arabic } from "next/font/google";
 import { Toaster } from "sonner";
 import { ChunkErrorRecovery } from "@/components/shared/chunk-error-recovery";
 import { SiteShell } from "@/components/layout/site-shell";
 import { RegistrationProvider } from "@/components/course-registration/registration-provider";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { QueryProvider } from "@/providers/query-provider";
 import { JsonLd } from "@/components/seo/json-ld";
 import { getSiteInfo } from "@/lib/data/site";
 import {
@@ -23,18 +21,15 @@ import "./globals.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 const notoArabic = Noto_Sans_Arabic({
   variable: "--font-arabic",
   subsets: ["arabic"],
-  weight: ["500", "600", "700"],
+  weight: ["600"],
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -100,7 +95,6 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    // Add Search Console / Bing tokens via env when available
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
     other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
       ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
@@ -108,8 +102,8 @@ export const metadata: Metadata = {
   },
 };
 
-/** Public pages revalidate every 2 minutes — CMS edits appear shortly after save */
-export const revalidate = 120;
+/** Fallback — CMS edits also trigger /api/revalidate for instant updates */
+export const revalidate = 30;
 
 export default async function RootLayout({
   children,
@@ -121,9 +115,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${notoArabic.variable} antialiased bg-background text-foreground`}
-      >
+      <body className={`${geistSans.variable} ${notoArabic.variable} antialiased bg-background text-foreground`}>
         <JsonLd
           data={[
             organizationJsonLd({
@@ -136,14 +128,10 @@ export default async function RootLayout({
           ]}
         />
         <ChunkErrorRecovery />
-        <ThemeProvider>
-          <QueryProvider>
-            <RegistrationProvider>
-              <SiteShell siteInfo={siteInfo}>{children}</SiteShell>
-            </RegistrationProvider>
-            <Toaster theme="dark" position="bottom-right" richColors />
-          </QueryProvider>
-        </ThemeProvider>
+        <RegistrationProvider>
+          <SiteShell siteInfo={siteInfo}>{children}</SiteShell>
+          <Toaster theme="dark" position="bottom-right" richColors />
+        </RegistrationProvider>
       </body>
     </html>
   );

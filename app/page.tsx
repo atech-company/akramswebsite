@@ -1,15 +1,8 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { HeroSection } from "@/features/home/hero-section";
 import { FeaturedCoursesSection } from "@/features/home/courses-section";
 import { ServicesSection } from "@/features/home/services-section";
-import {
-  PortfolioSection,
-  ProductsSection,
-  TestimonialsSection,
-  PartnersSection,
-  BlogPreviewSection,
-} from "@/features/home/more-sections";
-import { NewsletterSection } from "@/features/home/newsletter-section";
 import {
   getBlogPosts,
   getFeaturedCourses,
@@ -21,6 +14,25 @@ import {
 } from "@/lib/data/content";
 import { getSiteInfo } from "@/lib/data/site";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, buildPageMetadata } from "@/lib/seo";
+
+const PortfolioSection = dynamic(() =>
+  import("@/features/home/more-sections").then((m) => m.PortfolioSection)
+);
+const ProductsSection = dynamic(() =>
+  import("@/features/home/more-sections").then((m) => m.ProductsSection)
+);
+const TestimonialsSection = dynamic(() =>
+  import("@/features/home/more-sections").then((m) => m.TestimonialsSection)
+);
+const PartnersSection = dynamic(() =>
+  import("@/features/home/more-sections").then((m) => m.PartnersSection)
+);
+const BlogPreviewSection = dynamic(() =>
+  import("@/features/home/more-sections").then((m) => m.BlogPreviewSection)
+);
+const NewsletterSection = dynamic(() =>
+  import("@/features/home/newsletter-section").then((m) => m.NewsletterSection)
+);
 
 export const metadata: Metadata = buildPageMetadata({
   title: DEFAULT_TITLE,

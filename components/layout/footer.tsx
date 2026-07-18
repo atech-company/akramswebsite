@@ -39,8 +39,8 @@ export function Footer({ siteInfo }: { siteInfo: SiteInfo }) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           <div className="lg:col-span-2">
             <Link href="/" className="flex items-center gap-3 mb-6">
-              <BrandLogo size={48} className="border border-primary/20 shrink-0" />
-              <BrandWordmark />
+              <BrandLogo size={72} className="border border-primary/20 shrink-0" />
+              <BrandWordmark size="lg" />
             </Link>
             <p className="text-muted text-sm leading-relaxed max-w-sm mb-6">
               {siteInfo.tagline} — hands-on robotics training since {siteInfo.founded}.

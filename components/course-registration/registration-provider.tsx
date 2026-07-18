@@ -1,8 +1,13 @@
 "use client";
 
 import { createContext, useCallback, useContext, useState } from "react";
+import dynamic from "next/dynamic";
 import type { CourseRegistrationValue } from "@/lib/course-registration";
-import { RegistrationModal } from "./registration-modal";
+
+const RegistrationModal = dynamic(
+  () => import("./registration-modal").then((m) => m.RegistrationModal),
+  { ssr: false }
+);
 
 interface RegistrationContextValue {
   openRegistration: (course?: CourseRegistrationValue) => void;
@@ -22,11 +27,13 @@ export function RegistrationProvider({ children }: { children: React.ReactNode }
   return (
     <RegistrationContext.Provider value={{ openRegistration }}>
       {children}
-      <RegistrationModal
-        open={open}
-        prefillCourse={prefillCourse}
-        onClose={() => setOpen(false)}
-      />
+      {open && (
+        <RegistrationModal
+          open={open}
+          prefillCourse={prefillCourse}
+          onClose={() => setOpen(false)}
+        />
+      )}
     </RegistrationContext.Provider>
   );
 }

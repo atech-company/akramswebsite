@@ -31,13 +31,13 @@ export function Navbar() {
       )}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-3 group">
+        <Link href="/" className="flex items-center gap-3.5 group">
           <BrandLogo
-            size={48}
+            size={72}
             priority
             className="border border-primary/20 group-hover:glow-primary transition-all shrink-0"
           />
-          <BrandWordmark />
+          <BrandWordmark size="lg" />
         </Link>
 
         <nav className="hidden lg:flex items-center gap-1">

@@ -8,13 +8,12 @@ type BrandLogoProps = {
 };
 
 /**
- * Retina-ready brand mark (512px WebP ≈ 11KB).
- * Displays sharp on phones, tablets, and HiDPI screens.
+ * Serve a size close to display (128px WebP ≈ 2KB) for sharp retina at ~72px.
  */
-export function BrandLogo({ className, size = 48, priority = false }: BrandLogoProps) {
+export function BrandLogo({ className, size = 72, priority = false }: BrandLogoProps) {
   return (
     <Image
-      src="/brand/logo-512.webp"
+      src="/brand/logo-128.webp"
       alt="AkramsLab — مختبر اكرم"
       width={size}
       height={size}
